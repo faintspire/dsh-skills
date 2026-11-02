@@ -1,7 +1,7 @@
 ---
 name: avoid-over-defensive-code
-description: 约束 Java 代码不要过度防御：判定什么算过度防御、该在哪一层兜底、哪些检查是冗余的、已有工具类不要重造（现成工具类只有文件版 API、而内部已先拿到 byte[] 时，抽共享取字节核心并加内存版方法，而不是跟着落盘或复制一份压缩逻辑）、不要为假设的扩展性预建 properties 配置类/record/独立 service/缓存层，并给出存量脏数据兼容这一合法防御的写法。当用户要求写或改 Java 业务代码、新增 service/接口/异步任务、做 code review，或提到"过度防御""不要多写一套""不要多余的分层""抽象层""可扩展""兜底""简化""脏数据兼容""临时文件""内存版""落盘"时使用。
-whenToUse: 当需求本身很小（判一个邮箱后缀、加一个开关、算一份配额）但方案开始膨胀成配置类 + record + 独立 service + 缓存层时；或用户说"直接做一个工具类就行""先做简单点""不要那么多层"时；也用于判断哪些兜底该删、哪些必须留；也用于发现"照着现成工具类的文件版方法写，结果多了一次落盘、一次二次解码和一段 finally 清理"时（见第二节的文件版/内存版判定）。
+description: 约束 Java 代码不要过度防御：判定什么算过度防御、该在哪一层兜底、哪些检查是冗余的、已有工具类不要重造（现成工具类只有文件版 API、而内部已先拿到 byte[] 时，抽共享取字节核心并加内存版方法，而不是跟着落盘或复制一份压缩逻辑）、不要为假设的扩展性预建 properties 配置类/record/独立 service/缓存层，给出存量脏数据兼容这一合法防御的写法，并给出删掉冗余判空后的收尾（grep 零引用 → 删死工具类与失效 import → 编译验收）。当用户要求写或改 Java 业务代码、新增 service/接口/异步任务、做 code review，或提到"过度防御""不要多写一套""不要多余的分层""抽象层""可扩展""兜底""简化""脏数据兼容""临时文件""内存版""落盘""这个不要再判空了""零引用""死代码"时使用。
+whenToUse: 当需求本身很小（判一个邮箱后缀、加一个开关、算一份配额）但方案开始膨胀成配置类 + record + 独立 service + 缓存层时；或用户说"直接做一个工具类就行""先做简单点""不要那么多层"时；也用于判断哪些兜底该删、哪些必须留；也用于发现"照着现成工具类的文件版方法写，结果多了一次落盘、一次二次解码和一段 finally 清理"时（见第二节的文件版/内存版判定）；也用于用户明确说"这些字段不是必传、不要再判空了"之后做收尾时（grep 零引用、删死工具类、清失效 import、跑 Maven 编译，见第六节）。
 ---
 
 # 不过度防御
@@ -10,7 +10,7 @@ whenToUse: 当需求本身很小（判一个邮箱后缀、加一个开关、算
 
 1. **这个兜底，上层是不是已经有了？** 有就删掉这层。
 2. **这个工具/组件，项目里是不是已经有？** 有就直接用，不要手写。若它只暴露文件导向 API、而你要的是字节，别照着落盘 —— 抽共享核心 + 加内存版（见第二节）。
-3. **这个判断，调用链上游是不是已经保证过了？** 保证过就不要再判。
+3. **这个判断，调用链上游是不是已经保证过了？** 保证过就不要再判。删掉之后还会连带产生死工具类与死 import，收尾见第六节。
 4. **这个类/接口/配置/缓存，是为眼下这一处调用建的，还是为"以后可能扩展"建的？** 是后者就先只写一个静态工具类（见第三节）。
 
 ---
@@ -36,6 +36,8 @@ whenToUse: 当需求本身很小（判一个邮箱后缀、加一个开关、算
 - 推 WebSocket 帧 → `WebSocketResponseUtil`（`sendError` / `sendProgress` / `sendDrawingResult` / `sendDrawingFailure` / `sendDrawingRejected`），不要在业务里 `new JSONObject()` 拼帧再 `NettyChannelManager.sendMessageToUser`。
 - TraceId → `TraceIdUtil`；分页 → `PageUtils`；文件路径 → `PathUtil`；图片下载/缩略图 → `ImageDownloadUtil`。
 - 请求构造/解析 → 对应 Provider（`DoubaoImageProvider` / `QwenImageProvider`）与 `DashScopeRequestBuilder`。
+
+> WebSocket 策略里取消息字段：`WebSocketRequestUtil`（`requireText`）已按第六节删除，**不要重建也不要重新引入**；`userId`、`prompt` 等一律 `requestJson.getString(...)` 直接取，缺值由 `MessageStrategyManager.processTextMessage` 的 catch 兜住推错误帧。
 
 判据：**同样的协议/格式在仓库里出现第二遍，就是错的。**
 
@@ -109,7 +111,55 @@ rg -n 'downloadAndGenerateBoth|generateThumbnail\(|downloadAndCompressImage\(' <
 
 ---
 
-## 写完后过这 16 条
+## 六、去掉冗余判空后的收尾：死工具类、死 import、编译证据
+
+命中第 3 条（"上游已保证就不要再判"）时，典型改法是把整段取参 + 判空删掉：
+
+```java
+// ❌ 上游 catch 已把缺值兜成错误帧，这两段都是多余的
+String userId = WebSocketRequestUtil.requireText(ctx, requestJson, "userId");
+if (userId == null) {
+    return;
+}
+
+// ✅ 直接取值
+String userId = requestJson.getString("userId");
+String prompt = requestJson.getString("prompt");
+```
+
+删掉的不只是这几行 —— 取参工具可能因此变成零引用。收尾按下面顺序做，一步都不能省：
+
+1. **先声明范围，再动手**：同一个写法往往不止一处（本次三个策略类都是 `requireText` + `if (x == null) return`）。改前先 grep 该写法在全仓的分布，把所有同类点一起清理，别只改被点名的那一处。
+2. **改完立刻 grep 引用面**：
+
+   ```bash
+   rg -n 'WebSocketRequestUtil' --glob '*.java' .
+   ```
+
+   剩下的命中只应出现在工具类自身文件里（类声明、私有构造器）；别的文件还有命中，就是有调用点没改，回去补。
+3. **确认零引用才删文件**（Windows PowerShell）：
+
+   ```powershell
+   $p = "<仓库>\biovisart-netty\src\main\java\com\sangerbox\biovisart\netty\util\WebSocketRequestUtil.java"
+   if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Force; "deleted: $p" } else { "not found: $p" }
+   ```
+
+   还有一处引用就不删，留着。别用通配符/递归删除，用 `-LiteralPath` 指到具体文件。
+4. **清掉失效符号**：删掉每个被改文件里的 `import ...WebSocketRequestUtil;`，再逐个文件扫一遍因删除调用而变成未使用的 import（本次是 `java.util.List`、`com.sangerbox.biovisart.vo.AiGalleryVo`）和局部变量。注意区别：未使用的 import 不影响编译但纯属噪音；**引用了已删类的 import 会直接编译失败**。若方法参数 `ctx` 只剩传参用途，先确认策略接口是否强制该签名 —— 是则保留并在汇报里说明，不是才删。
+5. **编译验收**：
+
+   ```bash
+   mvn -pl biovisart-biz,biovisart-netty -am compile 2>&1 | Select-String -Pattern "BUILD|SUCCESS \[|FAILURE|ERROR\]" | Select-Object -Last 15
+   ```
+
+   末态必须是 `BUILD SUCCESS`，且 Reactor Summary 里每个改动模块都是 SUCCESS；用 `Select-String` 抽摘要而不是看 exit code。**别加 `clean`** —— 本仓 Windows 环境下 `clean` 会报 `Failed to clean project: Failed to delete ...\target\...`，与本次代码改动无关，绕它没有意义（Maven 细节见 `maven-multimodule-compile-verify-windows`）。
+6. **汇报形态**：按「文件:行号 + 改动要点 + 编译结果」逐文件列成表格，最后一行给出实际执行的编译命令与 `BUILD SUCCESS`。
+
+分工边界：本节只管"因删冗余判空而**新产生**的死工具类/死 import"；"整类死代码（接口 + 唯一实现 + 注入点）的删除与零引用验收"走 `java-dead-code-removal-verify`。
+
+---
+
+## 写完后过这 19 条
 
 - [ ] 每个 `== null` 判断，都能说出"谁可能传进来 null"
 - [ ] 每个 `catch` 都有上层没有的处置动作（打点/降级/转换），否则删掉
@@ -127,6 +177,9 @@ rg -n 'downloadAndGenerateBoth|generateThumbnail\(|downloadAndCompressImage\(' <
 - [ ] 域名、阈值、开关这类纯判定常量写在工具类里，没有为它单开配置类或缓存层
 - [ ] 存量脏数据兼容只 catch 专用异常子类（如 `InvalidStoredContentException`），不是 `Exception` / 父类，且注释写明脏数据来源
 - [ ] 写入口不落占位串/非目标格式内容，复用已有常量（如 `DEFAULT_DIAGRAM_CONTENT`），没新写一份
+- [ ] 删掉判空后，原来的取参辅助方法/工具类已 grep 确认零引用，且文件已删除（不是留着"以后可能用"）
+- [ ] 因删除调用而失效的 import、局部变量、未使用参数都清掉了；引用了已删类的 import 一处不剩
+- [ ] 末态证据是 `mvn -pl <改动模块列表> -am compile`（**不带 clean**）的 `BUILD SUCCESS`，每个改动模块在 Reactor Summary 里都是 SUCCESS
 
 ## 该保留的防御（别删过头）
 
@@ -284,6 +337,23 @@ byte[] thumb = ImageDownloadUtil.generateThumbnailBytes(full, ...);
 // 没有临时文件、没有二次解码、没有 finally 清理；md5 与两级目录命名逻辑照旧
 ```
 
+### 8. 判空删了，取参工具类却留成死代码
+
+```java
+// ❌ 只删了调用处的判空，requireText 从此零引用，WebSocketRequestUtil 变成没人用的类
+String userId = requestJson.getString("userId");
+// WebSocketRequestUtil.java 还在，import 也还挂着
+```
+
+```java
+// ✅ 三步收尾（第六节）：grep 零引用 → 删类 + 清 import → 编译验收
+// 1) rg -n 'WebSocketRequestUtil' --glob '*.java' .   → 只剩工具类自身
+// 2) Remove-Item -LiteralPath ...\netty\util\WebSocketRequestUtil.java -Force
+//    三个策略类同时删掉 import ...WebSocketRequestUtil;
+//    以及因此变成未使用的 java.util.List / com.sangerbox.biovisart.vo.AiGalleryVo
+// 3) mvn -pl biovisart-biz,biovisart-netty -am compile  → BUILD SUCCESS
+```
+
 ---
 
 ## 快速扫描
@@ -298,9 +368,10 @@ rg -n '!= null &&' <file>                 # 双重判空是否必需
 rg -n 'newSingleThreadScheduledExecutor|supplyAsync.*\.get\(' <file>   # 异步里再开线程
 rg -n 'createTempFile|deleteIfExists|Files\.readAllBytes' <file>       # 为拿字节新建的临时文件：先看有没有内存版 API
 rg -n 'ImageIO\.read\(' <file>                                        # 是否从刚落盘的文件再读回来解码（二次解码）
+rg -n 'WebSocketRequestUtil|requireText' --glob '*.java' .             # 判空删完后是否还有引用（应只剩 0 处）
 git diff --stat                         # 净新增多个文件却只服务一条判定 → 回到第三节
 ```
 
 ## 提交前的自述
 
-在回复用户时用一句话说明：这次的防御放在哪一层、删掉了哪些重复兜底、这次一共新增了几个文件（多于一个就说明为什么必须多于一个）。说不清楚，就是还没想清楚。如果做了存量脏数据兼容，再补一句：脏数据是哪一版写入口产生的、这次怎么堵住。如果为了"省一次落盘"改了工具类，再补一句：抽出的共享核心叫什么、文件版是否仍是薄封装、原调用方是否都还能编译。
+在回复用户时用一句话说明：这次的防御放在哪一层、删掉了哪些重复兜底、这次一共新增了几个文件（多于一个就说明为什么必须多于一个）。说不清楚，就是还没想清楚。如果做了存量脏数据兼容，再补一句：脏数据是哪一版写入口产生的、这次怎么堵住。如果为了"省一次落盘"改了工具类，再补一句：抽出的共享核心叫什么、文件版是否仍是薄封装、原调用方是否都还能编译。如果删掉了因判空移除而变成零引用的工具类，也补一句：grep 结果如何、删了哪个文件、`mvn -pl <改动模块列表> -am compile` 是否 `BUILD SUCCESS`。

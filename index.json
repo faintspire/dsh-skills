@@ -1,5 +1,5 @@
 {
-  "generator": "dsh-vault@0.3.0",
+  "generator": "dsh-vault@0.4.0",
   "target": "skills",
   "entries": [
     {
@@ -13,10 +13,10 @@
     {
       "name": "avoid-over-defensive-code",
       "type": "skill",
-      "description": "约束 Java 代码不要过度防御：判定什么算过度防御、该在哪一层兜底、哪些检查是冗余的、已有工具类不要重造（现成工具类只有文件版 API、而内部已先拿到 byte[] 时，抽共享取字节核心并加内存版方法，而不是跟着落盘或复制一份压缩逻辑）、不要为假设的扩展性预建 properties 配置类/record/独立 service/缓存层，并给出存量脏数据兼容这一合法防御的写法。当用户要求写或改 Java 业务代码、新增 service/接口/异步任务、做 code review，或提到\"过度防御\"\"不要多写一套\"\"不要多余的分层\"\"抽象层\"\"可扩展\"\"兜底\"\"简化\"\"脏数据兼容\"\"临时文件\"\"内存版\"\"落盘\"时使用。",
-      "sha256": "974fdb20c0bd7b0fcde7883c315656b46cc4607990e6531a03501cd0ab805df7",
+      "description": "约束 Java 代码不要过度防御：判定什么算过度防御、该在哪一层兜底、哪些检查是冗余的、已有工具类不要重造（现成工具类只有文件版 API、而内部已先拿到 byte[] 时，抽共享取字节核心并加内存版方法，而不是跟着落盘或复制一份压缩逻辑）、不要为假设的扩展性预建 properties 配置类/record/独立 service/缓存层，给出存量脏数据兼容这一合法防御的写法，并给出删掉冗余判空后的收尾（grep 零引用 → 删死工具类与失效 import → 编译验收）。当用户要求写或改 Java 业务代码、新增 service/接口/异步任务、做 code review，或提到\"过度防御\"\"不要多写一套\"\"不要多余的分层\"\"抽象层\"\"可扩展\"\"兜底\"\"简化\"\"脏数据兼容\"\"临时文件\"\"内存版\"\"落盘\"\"这个不要再判空了\"\"零引用\"\"死代码\"时使用。",
+      "sha256": "0d73d2bbd548b8147fd75b08a3e12c8e35119c39908ab156c3d79133ed2b6377",
       "files": 1,
-      "bytes": 20076
+      "bytes": 25420
     },
     {
       "name": "babysit",
@@ -125,10 +125,10 @@
     {
       "name": "maven-multimodule-compile-verify-windows",
       "type": "skill",
-      "description": "在 Windows 下对本仓 Java 多模块改动做 Maven 编译验收：用 tools.win_bash 执行 mvn，-Dmaven.repo.local 用引号包裹的正斜杠路径，单模块改动可直接 `-pl <模块> -am` 并配内联 timeoutMs，多模块改动用显式逗号 -pl 列表，最终以 BUILD SUCCESS 与 Reactor Summary 判定而非 exit code。当用户说\"编译验收\"\"编译验证一下\"\"帮我 mvn 编译\"\"确认模块能编译\"，或遇到 No plugin found for prefix 需要修正命令时使用。",
-      "sha256": "48db0ac48530ca37cd003d7effb323bcafc0284406fe8086087ee95b59921bfb",
+      "description": ">-",
+      "sha256": "62cebbc34ef3746cb7be2c5462b91ba66c495668eb7523e615c0170792bae6b8",
       "files": 1,
-      "bytes": 7778
+      "bytes": 11464
     },
     {
       "name": "mcp-builder",
