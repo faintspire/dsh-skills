@@ -1,0 +1,271 @@
+{
+  "generator": "dsh-skill-sync@0.2.0",
+  "skills": [
+    {
+      "name": "automate",
+      "description": "Use this skill to create Codex Automations.",
+      "sha256": "033ff6892ea316aa8c7f0793564f3d416d4593dceedaeeac9444fbb230cc0c24",
+      "files": 1,
+      "bytes": 35812
+    },
+    {
+      "name": "avoid-over-defensive-code",
+      "description": "约束 Java 代码不要过度防御：判定什么算过度防御、该在哪一层兜底、哪些检查是冗余的、已有工具类不要重造（现成工具类只有文件版 API、而内部已先拿到 byte[] 时，抽共享取字节核心并加内存版方法，而不是跟着落盘或复制一份压缩逻辑）、不要为假设的扩展性预建 properties 配置类/record/独立 service/缓存层，并给出存量脏数据兼容这一合法防御的写法。当用户要求写或改 Java 业务代码、新增 service/接口/异步任务、做 code review，或提到\"过度防御\"\"不要多写一套\"\"不要多余的分层\"\"抽象层\"\"可扩展\"\"兜底\"\"简化\"\"脏数据兼容\"\"临时文件\"\"内存版\"\"落盘\"时使用。",
+      "sha256": "974fdb20c0bd7b0fcde7883c315656b46cc4607990e6531a03501cd0ab805df7",
+      "files": 1,
+      "bytes": 20076
+    },
+    {
+      "name": "babysit",
+      "description": ">-",
+      "sha256": "1805c87fc73e6f47d3c39059c7d8ef851080112feffc9f809db5b7b517fd419e",
+      "files": 1,
+      "bytes": 1436
+    },
+    {
+      "name": "biovisart-aiprompt-template-constraint-design",
+      "description": "改造 biovisart-server 的 AI 绘画提示词模板与场景约束组装：先取证合规审核的执行顺序与不拼约束的旁路，再把约束清单换成单一 %s 槽位模板并同步全部调用点为 buildPrompt；用户说「提示词模板要改」「用户文字要嵌进素材边界」「ARTWORK 那套也定下来一起改」「这条约束还要不要加进模板」时使用。",
+      "sha256": "b6aab351d5adac683d2ad81447973d8f55988e261b6da2e12de0548ff8d368fb",
+      "files": 1,
+      "bytes": 8852
+    },
+    {
+      "name": "biovisart-doubao-prompt-diagnose",
+      "description": "诊断 biovisart 项目里豆包（Seedream）AI 绘画出图不理想的原因：先从 DoubaoImageProvider 与 DoubaoDrawingServiceImpl 取证真实参数面（negativePrompt 是否透传、纯像素 size 走 resolveSize 哪条分支），再按「指令外壳 / 不可执行词 / 内部术语风格词」逐条对照代码事实诊断用户提示词，并输出纯描述性的改写提示词；默认只诊断不改代码。当用户说「豆包出图效果不好」「这条绘画提示词怎么改」「negative prompt 能不能设」「watermark 能设吗」「AiPromptConstants 里的约束把风格写死了」时使用。",
+      "sha256": "714916edd95309136adb62994854c6d80a617d8362ee153738a9620138a1e662",
+      "files": 1,
+      "bytes": 10029
+    },
+    {
+      "name": "canvas",
+      "description": ">-",
+      "sha256": "bc6d25fdf77192715cd83d4353ea682b995303c408d14c67e8222652e80b0466",
+      "files": 16,
+      "bytes": 84937
+    },
+    {
+      "name": "create-hook",
+      "description": ">-",
+      "sha256": "3b7477fb143358b51002dd5e90a8cbf09a9a90c8436ed202ea7e947f99a69812",
+      "files": 1,
+      "bytes": 9186
+    },
+    {
+      "name": "create-rule",
+      "description": ">-",
+      "sha256": "51558f01db5b9ee718d958608d5c1f9ef6a02e22312d42159317f2f53d43ec9e",
+      "files": 1,
+      "bytes": 3634
+    },
+    {
+      "name": "create-skill",
+      "description": ">-",
+      "sha256": "091f25fe336691e2dfdace9b7f77e58b3b01866bf18d9ba009396075da0b689f",
+      "files": 1,
+      "bytes": 14408
+    },
+    {
+      "name": "create-subagent",
+      "description": ">-",
+      "sha256": "3a9a0ffaf9bb45227da7c0f9924d7768614311070fabecfe3e066c3e214bc101",
+      "files": 1,
+      "bytes": 6453
+    },
+    {
+      "name": "design-proposal-before-code",
+      "description": "Turns a \"how would you change this, don't touch the code\" request into a review-first flow — restate the zero-change boundary, list the current state as 文件:行号 on dimensions chosen for this change surface, confirm landing scope and key contracts with a question tool, then deliver a design document with zero code changes. Use when the user says 先只出方案、先别动代码、只评审不改代码、先给设计方案, or pastes a constants/config snippet (e.g. 生图提示词约束块、配额常量) and asks 你打算怎么改 / 这块该怎么改 without asking for code edits.",
+      "sha256": "f5485f7b8f21ee8b6720a2660de116f3b497b1e66ba3d0f965b7bdf609290256",
+      "files": 1,
+      "bytes": 8818
+    },
+    {
+      "name": "env-setup",
+      "description": ">-",
+      "sha256": "29f82b740b7680f7551faa8a32d374f82d7a8ae3f80e97eddefc141cf10149fd",
+      "files": 1,
+      "bytes": 17536
+    },
+    {
+      "name": "frontend-design",
+      "description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults.",
+      "sha256": "7e9c2af00fd5b3144f49ce6fb1b16037b392ab9c2f049423b0b6114d99381ba2",
+      "files": 2,
+      "bytes": 19564
+    },
+    {
+      "name": "java-dead-code-removal-verify",
+      "description": "安全删除 Java 死代码并做零引用与编译验收：先 grep 引用面确认「接口 + 唯一实现 + 注入点」确实全死，再逐处清理残留（import、字段、失效 Lombok 注解、javadoc @link），用 pwsh `Remove-Item -LiteralPath ... -Force` 删文件，删后复验 0 引用，最后以 `mvn -pl <biz模块> -am clean compile` 通过收尾。当用户说「这个接口/类不需要了，删掉」「删掉这个 Impl」「死代码删一下」「相关残留也清干净」「删完确认没有残留引用」时使用。",
+      "sha256": "19739449ef6e6f5d10d972e6aabba0c194125089933098510997ce8a37efa8f1",
+      "files": 1,
+      "bytes": 6202
+    },
+    {
+      "name": "loop",
+      "description": ">-",
+      "sha256": "dd95c5221a5f79b327b322397e15b7522d1d4a252cdd8232dc81fc93da880ed2",
+      "files": 1,
+      "bytes": 7602
+    },
+    {
+      "name": "maven-multimodule-compile-verify-windows",
+      "description": "在 Windows 下对本仓 Java 多模块改动做 Maven 编译验收：用 tools.win_bash 执行 mvn，-Dmaven.repo.local 用引号包裹的正斜杠路径，单模块改动可直接 `-pl <模块> -am` 并配内联 timeoutMs，多模块改动用显式逗号 -pl 列表，最终以 BUILD SUCCESS 与 Reactor Summary 判定而非 exit code。当用户说\"编译验收\"\"编译验证一下\"\"帮我 mvn 编译\"\"确认模块能编译\"，或遇到 No plugin found for prefix 需要修正命令时使用。",
+      "sha256": "48db0ac48530ca37cd003d7effb323bcafc0284406fe8086087ee95b59921bfb",
+      "files": 1,
+      "bytes": 7778
+    },
+    {
+      "name": "mcp-builder",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
+      "sha256": "3e62325b392401dfffcc7ce0db0e11e27ed5910d8f903973ee93e860bf067d83",
+      "files": 11,
+      "bytes": 159159
+    },
+    {
+      "name": "migrate-to-builds",
+      "description": ">-",
+      "sha256": "8597984902b8ca92ff07eaa7bd8daf9a3468295d4328d1fef58640879ea7fb1d",
+      "files": 1,
+      "bytes": 6918
+    },
+    {
+      "name": "migrate-to-skills",
+      "description": ">-",
+      "sha256": "ee5b9df4d66595111c3c1c62f6dd60f51d21a3931346a99daaccde00ebd2d1ff",
+      "files": 1,
+      "bytes": 6435
+    },
+    {
+      "name": "mind-garden",
+      "description": "",
+      "sha256": "9ccde1cf25f993a07d5de3edd291dd3da58eea190db37d1c1dcf50ff1173f01d",
+      "files": 1,
+      "bytes": 2516
+    },
+    {
+      "name": "mind-garden-note-write",
+      "description": "把技术讨论整理成 mind-garden 工作笔记并发布：读仓库 AGENTS.md、grep 全仓查重并当场判定是修订既有笔记还是新建、对齐既有笔记的 frontmatter 与结构、在脏工作区下用 git fetch 加 git rev-list 判定是否需要同步（不 stash、不强行 rebase）、写 work/项目/YYYY-MM-DD-标题.md、在 work/README.md 索引表插入指向新笔记的行并与笔记放在同一个提交、只暂存新笔记与 README（其余既存改动保持未暂存）、用 note(scope): 提交并推送到 origin/main；同一请求里还含代码改动时先备份代码、评估可行性，笔记只记结论与可验证理由。当用户说「记笔记」「记一下」「整理成工作笔记」「同步笔记」「写进 mind-garden」「发布笔记」，或要求把一段排障/方案讨论落盘到笔记仓库并推送时使用。",
+      "sha256": "22da58738fec495e46122a8e2894ffca2e75ff1b5124a3693d7d920878676373",
+      "files": 1,
+      "bytes": 9683
+    },
+    {
+      "name": "new-repo",
+      "description": ">-",
+      "sha256": "c505f80ba2a1e60b25d535e26c1f67be3c6ce16c32b29b9baab5516a5d1b8f43",
+      "files": 1,
+      "bytes": 2818
+    },
+    {
+      "name": "onboard",
+      "description": ">-",
+      "sha256": "0aef8319c0ff7d7f70601eb15b82ef7eb1aa5c4b397514a8820d524109138be4",
+      "files": 1,
+      "bytes": 12230
+    },
+    {
+      "name": "origin",
+      "description": ">-",
+      "sha256": "0a47a089095d9a1501159d6ce70c8b5e018b1d3af07b46e2ff4857bce1bb4937",
+      "files": 1,
+      "bytes": 3884
+    },
+    {
+      "name": "rename-chat",
+      "description": ">-",
+      "sha256": "bbdc36b6ef9193489bf26034c2d006c77e30a6067ebcda382e811d00fe2e6716",
+      "files": 1,
+      "bytes": 793
+    },
+    {
+      "name": "review",
+      "description": "Review code changes with the Bugbot or Security Review subagent.",
+      "sha256": "afc4bfa7a04628b7c714e3516895ba67212afe4599dbdd5f91a5f0c56f40946b",
+      "files": 1,
+      "bytes": 587
+    },
+    {
+      "name": "review-bugbot",
+      "description": "Review code changes with Bugbot subagent.",
+      "sha256": "82f2b9a898e6c00e8c859348aab11ad2abb29574be4e4e7956648e8dd8332566",
+      "files": 1,
+      "bytes": 4902
+    },
+    {
+      "name": "review-security",
+      "description": "Review code changes with Security Review subagent.",
+      "sha256": "4d1c8e9e1a8268947f34b9630f8cd45021ca34c7c5f48047a023e24b0aff1eda",
+      "files": 1,
+      "bytes": 3757
+    },
+    {
+      "name": "sdk",
+      "description": ">-",
+      "sha256": "36da91f4d5c17910aee41f212aebb974eed475744e541e621c8dae4b24b93217",
+      "files": 1,
+      "bytes": 19563
+    },
+    {
+      "name": "share",
+      "description": ">-",
+      "sha256": "0cb78699777eb2ba1981e111255ba175ba06fc352613b20658ae47278d5aa1a8",
+      "files": 1,
+      "bytes": 3736
+    },
+    {
+      "name": "shell",
+      "description": ">-",
+      "sha256": "e6a30da3e61bb989d527d0231b52499b0577253c0febb3150e8d3f4c3d33b01f",
+      "files": 1,
+      "bytes": 867
+    },
+    {
+      "name": "split-to-prs",
+      "description": ">-",
+      "sha256": "17172f4bb1ed94998e15cd079b7a598a5235ff23ec1c95da38171687782e7f0c",
+      "files": 1,
+      "bytes": 2261
+    },
+    {
+      "name": "spring-satoken-cors-preflight-fix",
+      "description": "Diagnoses and fixes Spring Boot + Sa-Token applications where CORS OPTIONS preflight requests are blocked by SaInterceptor and surface as NotLoginException 500s with a second stack trace from a forward to /error; use when the user reports OPTIONS 预检 报 NotLoginException / 未能读取到有效 token、Sa-Token 拦截了跨域预检、预检请求 500 转发 /error，或改了 SaTokenConfig 后错误依旧.",
+      "sha256": "c45b88ac46dfd7bb47fff6aebf66426b8879d437979313042f19c80202aea11c",
+      "files": 1,
+      "bytes": 7941
+    },
+    {
+      "name": "statusline",
+      "description": ">-",
+      "sha256": "8f2d0edb32a928346be4fd07d29fd0917f1f6c5c20ef55fe1e0d939ddaa1e608",
+      "files": 1,
+      "bytes": 7200
+    },
+    {
+      "name": "subscribe",
+      "description": ">-",
+      "sha256": "1660528a569eb7125c34a5d4aa26e8ed11aa9cb8f3df4bfcaf89c834c799e27a",
+      "files": 1,
+      "bytes": 5628
+    },
+    {
+      "name": "update-cli-config",
+      "description": ">-",
+      "sha256": "f68447d82f689e587d8b9c938fa8748f53e4c1d8244654d6508c16b3578556d9",
+      "files": 1,
+      "bytes": 4678
+    },
+    {
+      "name": "update-cursor-settings",
+      "description": ">-",
+      "sha256": "f5ae6fe06b0ede1c03dc8110031d674dc990aa18b5b92e3afcc7bf7024cc51c1",
+      "files": 1,
+      "bytes": 4284
+    },
+    {
+      "name": "walkthrough-artifacts",
+      "description": ">-",
+      "sha256": "1183496208d8fde8f06fa4ccbad70902331301b005bd0ceee62e3afd126c0193",
+      "files": 1,
+      "bytes": 6991
+    }
+  ]
+}
