@@ -1,5 +1,5 @@
 {
-  "generator": "dsh-vault@0.4.0",
+  "generator": "dsh-vault@0.5.2",
   "target": "skills",
   "entries": [
     {
@@ -115,6 +115,22 @@
       "bytes": 6202
     },
     {
+      "name": "java-dependency-api-forensics-offline",
+      "type": "skill",
+      "description": "在没有 javap 的 Windows 机器上离线取证第三方 Java 依赖的真实 API：从本地 Maven 仓库定位 <artifact>-<version>-sources.jar、解压后直接读源码，用 Select-String 取真实方法/字段签名并给出「文件:行号 + 原文行」的证据；当用户说 javap 用不了、没有 javap、离线确认某个依赖到底有哪些方法/字段、不要装反编译工具时使用。",
+      "sha256": "9084488bde77042ea393dfae77378b6430d079db8cbee66c64766a82576543c5",
+      "files": 1,
+      "bytes": 7535
+    },
+    {
+      "name": "local-asset-git-snapshot-sync",
+      "type": "skill",
+      "description": "把本机 DSH 可携带资产（技能包、~/.mnemon 记忆、MCP 配置）按 target 分仓快照同步到各自的私有 git 仓库：清空重建受管子目录、每仓生成 index.json 清单、无变化时不产生提交，并核对远端落地与幂等；用户说「把技能/记忆/MCP 备份到私有仓库」「快照同步到 git」「每天自动推一次也能手动推」「本地删掉的远端也要消失」「memory 目录里到底存了什么」时使用。",
+      "sha256": "be256aae45ec591d82fdd58bf673868b9b46b37619a4b34b9a73b8ff1e9ed1ad",
+      "files": 1,
+      "bytes": 10165
+    },
+    {
       "name": "loop",
       "type": "skill",
       "description": ">-",
@@ -126,17 +142,17 @@
       "name": "maven-multimodule-compile-verify-windows",
       "type": "skill",
       "description": ">-",
-      "sha256": "62cebbc34ef3746cb7be2c5462b91ba66c495668eb7523e615c0170792bae6b8",
+      "sha256": "53cce277fe1c24f82d4e537a5deb66f655b29126c6b216eb30efb5ebac5c5f60",
       "files": 1,
-      "bytes": 11464
+      "bytes": 15511
     },
     {
       "name": "mcp-builder",
       "type": "skill",
-      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
-      "sha256": "3e62325b392401dfffcc7ce0db0e11e27ed5910d8f903973ee93e860bf067d83",
+      "description": "Guide for building high-quality MCP (Model Context Protocol) servers and clients — including a concept-first pass that explains MCP before any code — for Python (FastMCP), Node/TypeScript (MCP SDK v1/v2) and Java (Spring Boot with LangChain4j or Spring AI). Use when creating an MCP server to expose an API or service, adding an MCP client such as LangChain4j McpToolProvider to an existing app, or when the user asks what MCP is and whether their project needs a server or a client.",
+      "sha256": "83e44bf6dc589e1c8fbe6e06ce6207366603b594812ec6dec5c5056db21ab991",
       "files": 11,
-      "bytes": 159159
+      "bytes": 167461
     },
     {
       "name": "migrate-to-builds",
@@ -266,6 +282,14 @@
       "bytes": 7941
     },
     {
+      "name": "ssh-remote-bash-via-base64",
+      "type": "skill",
+      "description": "从 Windows PowerShell 用 ssh 在远程 Linux 上稳定执行多行 bash：单引号 here-string 存脚本 → UTF8 Base64 编码 → 远端 `base64 -d | bash`，并为递归 grep 超时与远程无权限（docker.sock permission denied、sudo 需要 tty、接口 403）给出「限域重跑 / 记录限制转只读取证」的处置；当用户说 ssh 多行脚本报 unexpected EOF、syntax error near `done'、括号被吃掉，或远程 grep -r 跑了两分多钟没结果、取证时撞上 permission denied / 403 时使用。",
+      "sha256": "d5d949492a8f93068e3ef2cfcb2cd752eda615fabcdce44f377eda6ecc411ba0",
+      "files": 1,
+      "bytes": 6152
+    },
+    {
       "name": "statusline",
       "type": "skill",
       "description": ">-",
@@ -304,6 +328,14 @@
       "sha256": "1183496208d8fde8f06fa4ccbad70902331301b005bd0ceee62e3afd126c0193",
       "files": 1,
       "bytes": 6991
+    },
+    {
+      "name": "web-search-fetch-fallback",
+      "type": "skill",
+      "description": "在 web_search 因缺少 DEEPSEEK_API_KEY 直接失败、web_fetch 报 cross-origin redirect 或抓取超时的情况下，用固定降级链取证——直接 web_fetch 官方文档、按报错提示的目标 URL 原样重试、需要搜索时抓 https://cn.bing.com/search?q=<urlencoded> 结果页，并让每条结论都附官方文档 URL 与原文句子；当用户说「用官方文档确认」「查一下官方文档」「给出官方文档链接和原文依据」，或检索工具报 no API key / cross-origin redirect / 超时时使用。",
+      "sha256": "84f6c6f187aa04309ba5fa8c840c6517983f177bc448d006ec51772c754054dd",
+      "files": 1,
+      "bytes": 6111
     }
   ]
 }
