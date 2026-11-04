@@ -3,6 +3,22 @@
   "target": "skills",
   "entries": [
     {
+      "name": "airwallex-multi-currency-order-support",
+      "type": "skill",
+      "description": "把 far-manu-server 的 payment 模块从写死 USD 改造成 CNY/USD/HKD 三币种同时可付（币种常量与白名单收进 PayConstants、PayOrderCreateDTO 增加 currency 入参校验、按「服务+币种」查 sys_pay_price 且缺价整单拒绝、订单与订单行存原币金额不做汇率折算、webhook 增加币种一致性校验、pay_init.sql 补齐三套价目种子），并以 mvn 编译和三币种真实建单验收；当用户说「支付要同时支持人民币/美元/港币」「代码里好像只跑美元」「每个币种单独标价」「不要做汇率换算」「多币种下回调校验够不够」时使用。",
+      "sha256": "bcf052ba3c0478cdce8fe7a3ccc4fcdf1c453ed1a2c36eed930d4bbae51c33e7",
+      "files": 1,
+      "bytes": 9011
+    },
+    {
+      "name": "airwallex-webhook-receive-local-test",
+      "type": "skill",
+      "description": "在 far-manu-server 接入 Airwallex 沙盒 webhook 的接收侧（魔法数字抽 PayConstants、sys_pay_event 事件表做幂等、HMAC-SHA256 验签、原始报文回调控制器、SecurityProperties 与 Nacos 双层放行）并用 check-pay-webhook.ps1 在本地免真实付款自测；用户说「webhook 建好了怎么接」「沙盒回调怎么测」「不想每次真实付款」「验签/重放/幂等问题」时使用。",
+      "sha256": "188c106194010748f7de51c86e461c1141d52020a0e97d0b52f5ebcd43c9a410",
+      "files": 1,
+      "bytes": 9137
+    },
+    {
       "name": "automate",
       "type": "skill",
       "description": "Use this skill to create Codex Automations.",
@@ -123,6 +139,14 @@
       "bytes": 7535
     },
     {
+      "name": "java-enum-rename-common-module-suffix",
+      "type": "skill",
+      "description": "在 Maven 多模块仓里把一个 Java 枚举改名并下沉到 common 模块的 enums 包（类名统一加 Enum 后缀），同步 *.java 引用与 *.md/*.sql 注释，再用旧名负向前瞻残留扫描、新名 .class 就位和多模块 mvn compile 退出码验收；当用户说「枚举统一放 common」「以 Enum 为后缀」「这个枚举改名/下沉 common」「全仓引用和文档 SQL 一起改」「改完保证多模块编译通过」时使用。",
+      "sha256": "ad324ce915e69816d74442155071dae2fedea885d83b38d34cc3385965b73403",
+      "files": 1,
+      "bytes": 11352
+    },
+    {
       "name": "local-asset-git-snapshot-sync",
       "type": "skill",
       "description": "把本机 DSH 可携带资产（技能包、~/.mnemon 记忆、MCP 配置）按 target 分仓快照同步到各自的私有 git 仓库：清空重建受管子目录、每仓生成 index.json 清单、无变化时不产生提交，并核对远端落地与幂等；用户说「把技能/记忆/MCP 备份到私有仓库」「快照同步到 git」「每天自动推一次也能手动推」「本地删掉的远端也要消失」「memory 目录里到底存了什么」时使用。",
@@ -208,6 +232,14 @@
       "sha256": "0a47a089095d9a1501159d6ce70c8b5e018b1d3af07b46e2ff4857bce1bb4937",
       "files": 1,
       "bytes": 3884
+    },
+    {
+      "name": "payment-task-draft-first-decoupling",
+      "type": "skill",
+      "description": "在 far-manu-server 把 C 端支付改成「先建任务草稿 → 带 taskId 下单 → 支付成功事件驱动履约」的固定改法：跨模块契约（InspectTaskPort 端口 + PayOrderPaidEvent 事件）放在 far-manu-common，payment 只依赖契约、business 只实现契约，并用部分唯一索引防同一任务重复下单；用户说「先建任务草稿再下单」「付款成功后才把任务推下去提交检测」「payment 和 business 不要互相依赖」「C 端支付改造」时使用。",
+      "sha256": "26b9bb4ecb44aca69c4b1bc46083913acae7972c00f4803c4cc99ece09eade31",
+      "files": 1,
+      "bytes": 8969
     },
     {
       "name": "rename-chat",
