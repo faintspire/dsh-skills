@@ -107,6 +107,14 @@
       "bytes": 8818
     },
     {
+      "name": "dsh-desktop-profile-plugin-uninstall",
+      "type": "skill",
+      "description": "在没有可用 dsh CLI 的 DSH 桌面端（桌面 profile，Windows/PowerShell）手动卸载一个插件包：先确认唯一生效 profile、按 package.json 的 name/version 摆出名字相近的候选并提问定死「卸哪个 + 是否留数据」、带时间戳备份、同步删 dependencies 与 dsh.profile.bundles、把 cordis.patch.yml 里引用该模块的条目整段注释掉、再删 node_modules 下的 scope 目录并用 node 解析 JSON/YAML 验收；当用户说「卸载某个插件」「把插件市场装的包删掉」「web-ui 全家桶不要了」「卸载插件但数据都留着」「dsh plugin 命令不存在怎么卸」时使用。",
+      "sha256": "f1172881420ce8c80adc660d9691b4ddaae7dd4365c856c1ca1b0394a39bc604",
+      "files": 1,
+      "bytes": 9047
+    },
+    {
       "name": "env-setup",
       "type": "skill",
       "description": ">-",
