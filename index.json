@@ -13,10 +13,10 @@
     {
       "name": "airwallex-webhook-receive-local-test",
       "type": "skill",
-      "description": "在 far-manu-server 接入 Airwallex 沙盒 webhook 的接收侧（魔法数字抽 PayConstants、sys_pay_event 事件表做幂等、HMAC-SHA256 验签、原始报文回调控制器、SecurityProperties 与 Nacos 双层放行）并用 check-pay-webhook.ps1 在本地免真实付款自测；用户说「webhook 建好了怎么接」「沙盒回调怎么测」「不想每次真实付款」「验签/重放/幂等问题」时使用。",
-      "sha256": "188c106194010748f7de51c86e461c1141d52020a0e97d0b52f5ebcd43c9a410",
+      "description": "在 far-manu-server 接入并排查 Airwallex 沙盒 webhook 接收侧（HMAC-SHA256 原始字节验签、sys_pay_event event_id 唯一索引幂等、按 event_type 分派到 PayEventHandler、SecurityProperties 与 Nacos 双层放行），硬判据是「动手改前先连库统计 sys_pay_event 的 event_type×status 分布与真实 payload，改完用库里真实报文离线回放验收」；用户说「webhook 建好了怎么接」「沙盒回调怎么测」「未注册处理器，仅落库」「事件一直 status=0 / 钱到账订单没履约」「哪些事件在推、哪个 handler 是死判断」「要不要给这个事件加处理器」时使用。",
+      "sha256": "78009cee2891201d3597ddcbbc6f3dfdba4fe7c63e0938bb2235cbd0e2f236a6",
       "files": 1,
-      "bytes": 9137
+      "bytes": 17741
     },
     {
       "name": "automate",
@@ -147,6 +147,14 @@
       "bytes": 7535
     },
     {
+      "name": "java-enum-constant-removal-codetable-sync",
+      "type": "skill",
+      "description": "删除 Java 状态枚举项、收窄状态码表并让代码/SQL/文档全仓一致时使用：先用「DRAFT|草稿」这类 pattern 全仓 grep 画出 java+sql+docs 引用面，再删枚举项与状态机 ALLOWED_TRANSITIONS 转换边、同清端口接口+适配器实现+全部调用点、改建表 DEFAULT 与 COMMENT、补迁移校验 SQL 与文档流程图，最后复扫残留逐条判定并跑 mvn clean compile 验收；用户说「这个状态不要了」「没有草稿这一说，码表只从 1 开始」「草稿态去掉，代码 SQL 文档都要一致」时使用。",
+      "sha256": "df177f56f784293332b15bdb8513e57fd318afbe781be02e8cca82ebd531f299",
+      "files": 1,
+      "bytes": 9342
+    },
+    {
       "name": "java-enum-rename-common-module-suffix",
       "type": "skill",
       "description": "在 Maven 多模块仓里把一个 Java 枚举改名并下沉到 common 模块的 enums 包（类名统一加 Enum 后缀），同步 *.java 引用与 *.md/*.sql 注释，再用旧名负向前瞻残留扫描、新名 .class 就位和多模块 mvn compile 退出码验收；当用户说「枚举统一放 common」「以 Enum 为后缀」「这个枚举改名/下沉 common」「全仓引用和文档 SQL 一起改」「改完保证多模块编译通过」时使用。",
@@ -248,6 +256,14 @@
       "sha256": "26b9bb4ecb44aca69c4b1bc46083913acae7972c00f4803c4cc99ece09eade31",
       "files": 1,
       "bytes": 8969
+    },
+    {
+      "name": "react-vite-beginner-diy-coach",
+      "type": "skill",
+      "description": "以「学员自己动手」模式陪初学者用 Vite 搭 React 项目并排查 JSX 组件错误：先一条 pwsh 探测 Node/npm/执行策略给结论表，再给带「预期输出」的编号步骤，卡住时先递归列 src 再读真实文件诊断，只给位置与骨架、不代写代码。用户说「一步步教我怎么用 Vite 建 React 项目」「拆组件传 props 页面什么都没显示也不报错」「代码我自己敲你不要帮我写」「现在可以不」时使用。",
+      "sha256": "14a3a97521ff804dc228d97ea576c10e014d92d30abef906d662a960143cf043",
+      "files": 1,
+      "bytes": 7923
     },
     {
       "name": "rename-chat",
